@@ -9,9 +9,9 @@ const jsonParser = express.json()
 const serializeNote = note => ({
   id: note.id,
   note_name: xss(note.note_name),
-  modified: note.modified,
   folder_id: note.folder_id,
-  content: note.content,
+  content: xss(note.content),
+  modified: note.modified,
 })
 
 notesRouter
@@ -24,8 +24,8 @@ notesRouter
       .catch(next)
   })
   .post(jsonParser, (req, res, next) => {
-    const { note_name, modified, folder_id, content } = req.body
-    const newNote = { note_name, modified, folder_id, content }
+    const { note_name, folder_id, content } = req.body
+    const newNote = { note_name, folder_id, content }
 
     for (const [key, value] of Object.entries(newNote))
       if (value == null)
@@ -78,13 +78,13 @@ notesRouter
       .catch(next)
   })
   .patch(jsonParser, (req, res, next) => {
-    const { note_name, modified, folder_id, content } = req.body
-    const noteToUpdate = { note_name, modified, folder_id, content }
+    const { note_name, folder_id, content } = req.body
+    const noteToUpdate = { note_name, folder_id, content }
 
     const numberOfValues = Object.values(noteToUpdate).filter(Boolean).length
     if (numberOfValues === 0) {
       return res.status(400).json({
-        error: { message: `Request body must contain 'note_name', 'modified', 'folder_id', and 'content'` }
+        error: { message: `Request must contain either note_name, folder_id, or content` }
       })
     }
 
