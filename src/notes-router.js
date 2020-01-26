@@ -38,12 +38,17 @@ notesRouter
       newNote
     )
       .then(note => {
+        console.log("hey hello", note)
         res
           .status(201)
           .location(path.posix.join(req.originalUrl, `/${note.id}`))
           .json(serializeNote(note))
       })
-      .catch(next)
+      .catch(error => {
+        console.log("error", error);
+        next()
+      })
+        
   })
 
 notesRouter
